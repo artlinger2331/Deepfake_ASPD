@@ -1,4 +1,1 @@
-{
-  "tests/test_evaluation.py::test_metrics_calculate_correctly_using_sample_data": true,
-  "tests/test_evaluation.py::test_print_and_save_report_succeeds_with_missing_transcription_references": true
-}
+{}

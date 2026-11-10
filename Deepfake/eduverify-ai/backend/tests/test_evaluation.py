@@ -221,7 +221,7 @@ def test_metrics_calculate_correctly_using_sample_data():
     assert round(sec_a["fnr"], 2) == 33.33
 
     # Category breakdown accuracy
-    cats = sec_a["by_category_breakdown"]
+    cats = sec_a["category_breakdown"]
     assert cats["real_photo"]["total"] == 2
     assert cats["real_photo"]["correct"] == 1
     assert cats["real_photo"]["accuracy"] == 50.0
@@ -545,7 +545,21 @@ def test_print_and_save_report_succeeds_with_missing_transcription_references(tm
     content = report_file.read_text(encoding="utf-8")
 
     assert "Transcription accuracy cannot be measured yet." in content
-    assert "This evaluation does not prove that EduVerify AI can determine academic misconduct." in content
+    assert "No reference files found in `evaluation/transcriptions/{image_id}_reference.txt`" in content
+
+
+def test_official_evaluation_report_contains_mandatory_ethical_disclaimer():
+    """Verify that the official evaluation_report.md contains the exact required ethical disclaimer."""
+    official_report = Path(calculate_metrics.EVAL_DIR) / "evaluation_report.md"
+    assert official_report.exists(), f"Official evaluation_report.md not found at: {official_report}"
+    content = official_report.read_text(encoding="utf-8")
+    
+    expected_disclaimer = (
+        "This evaluation does not prove that EduVerify AI can determine academic misconduct. "
+        "It measures system performance on a limited test set. A concerning result requires "
+        "human review and must not be used as sole evidence against a student."
+    )
+    assert expected_disclaimer in content
 
 
 # =============================================================================

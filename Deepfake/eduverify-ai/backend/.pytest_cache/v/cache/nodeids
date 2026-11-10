@@ -19,6 +19,7 @@
   "tests/test_evaluation.py::test_metrics_visual_synthetic_score_sweeps_and_distributions",
   "tests/test_evaluation.py::test_missing_image_does_not_crash_runner_discover_images",
   "tests/test_evaluation.py::test_missing_transcription_reference_does_not_crash_metrics_calculator",
+  "tests/test_evaluation.py::test_official_evaluation_report_contains_mandatory_ethical_disclaimer",
   "tests/test_evaluation.py::test_print_and_save_report_succeeds_with_missing_transcription_references",
   "tests/test_evaluation.py::test_results_csv_loads_and_merges_correctly",
   "tests/test_evaluation.py::test_run_evaluation_exits_gracefully_when_no_images_found"
