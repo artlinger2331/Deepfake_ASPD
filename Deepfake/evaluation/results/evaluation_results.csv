@@ -1,0 +1,5 @@
+image_id,file_name,true_label,predicted_verdict,confidence,visual_synthetic_score,content_classification,metadata_status,c2pa_status,ocr_status,ocr_word_count,ocr_confidence,handwriting_transcription_status,handwriting_word_count,handwriting_confidence,is_readable,fallback_used,response_time_seconds,error_message
+IMG_DIFF_001,IMG_DIFF_001.jpeg,real_photo,genuine,0.95,0.12,authentic,warning,missing,success,53,95.0,success,53,95.0,True,False,46.735,
+IMG_DIFF_002,IMG_DIFF_002.jpeg,real_photo,genuine,0.95,0.12,authentic,warning,missing,success,43,95.0,success,43,95.0,True,False,16.125,
+IMG_REAL_001,IMG_REAL_001.jpeg,real_photo,genuine,0.9,0.12,authentic,warning,missing,success,15,90.0,success,15,90.0,True,False,11.465,
+IMG_REAL_002,IMG_REAL_002.jpeg,real_photo,genuine,0.95,0.12,authentic,warning,missing,success,62,95.0,success,62,95.0,True,False,18.304,
