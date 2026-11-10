@@ -58,24 +58,44 @@ if not exist "%FRONTEND_DIR%\node_modules" (
 
 :: 3. Detect Python Environment
 echo [3/4] Detecting Python environment...
+set "VENV_DIR="
+set "PYTHON_CMD=python"
+
 if exist "%BACKEND_DIR%\venv_gpu\Scripts\python.exe" (
-    set "VENV_DIR=%BACKEND_DIR%\venv_gpu"
-    echo       Found GPU environment: venv_gpu
-) else if exist "%BACKEND_DIR%\venv\Scripts\python.exe" (
-    set "VENV_DIR=%BACKEND_DIR%\venv"
-    echo       Found standard environment: venv
-) else (
-    set "VENV_DIR="
-    echo       Using system Python
+    "%BACKEND_DIR%\venv_gpu\Scripts\python.exe" -c "exit(0)" >nul 2>&1
+    if !errorlevel! equ 0 (
+        set "VENV_DIR=%BACKEND_DIR%\venv_gpu"
+        echo       Found working GPU environment: venv_gpu
+    )
+)
+if not defined VENV_DIR if exist "%BACKEND_DIR%\venv\Scripts\python.exe" (
+    "%BACKEND_DIR%\venv\Scripts\python.exe" -c "exit(0)" >nul 2>&1
+    if !errorlevel! equ 0 (
+        set "VENV_DIR=%BACKEND_DIR%\venv"
+        echo       Found working standard environment: venv
+    )
+)
+if not defined VENV_DIR (
+    where python >nul 2>&1
+    if !errorlevel! equ 0 (
+        echo       Using system Python
+    ) else if exist "C:\Python314\python.exe" (
+        set "PYTHON_CMD=C:\Python314\python.exe"
+        echo       Using C:\Python314\python.exe
+    ) else (
+        echo [ERROR] No working Python installation found!
+        pause
+        exit /b 1
+    )
 )
 
 :: 4. Launch Backend & Frontend
 echo.
 echo [4/4] Launching Servers...
 if defined VENV_DIR (
-    start "EduVerify AI - Backend (FastAPI)" /D "%BACKEND_DIR%" cmd /k "call "%VENV_DIR%\Scripts\activate.bat" && title EduVerify AI - Backend && color 0B && echo ==================================================== && echo               EduVerify AI - Backend Server          && echo ==================================================== && echo Running on: http://localhost:8001 && echo Docs:       http://localhost:8001/docs && echo. && uvicorn main:app --port 8001"
+    start "EduVerify AI - Backend (FastAPI)" /D "%BACKEND_DIR%" cmd /k "call "%VENV_DIR%\Scripts\activate.bat" && title EduVerify AI - Backend && color 0B && echo ==================================================== && echo               EduVerify AI - Backend Server          && echo ==================================================== && echo Running on: http://localhost:8001 && echo Docs:       http://localhost:8001/docs && echo. && python -m uvicorn main:app --port 8001"
 ) else (
-    start "EduVerify AI - Backend (FastAPI)" /D "%BACKEND_DIR%" cmd /k "title EduVerify AI - Backend && color 0B && echo ==================================================== && echo               EduVerify AI - Backend Server          && echo ==================================================== && echo Running on: http://localhost:8001 && echo Docs:       http://localhost:8001/docs && echo. && python -m uvicorn main:app --port 8001"
+    start "EduVerify AI - Backend (FastAPI)" /D "%BACKEND_DIR%" cmd /k "title EduVerify AI - Backend && color 0B && echo ==================================================== && echo               EduVerify AI - Backend Server          && echo ==================================================== && echo Running on: http://localhost:8001 && echo Docs:       http://localhost:8001/docs && echo. && "%PYTHON_CMD%" -m uvicorn main:app --port 8001"
 )
 
 start "EduVerify AI - Frontend (React + Vite)" /D "%FRONTEND_DIR%" cmd /k "title EduVerify AI - Frontend && color 0D && echo ==================================================== && echo               EduVerify AI - Frontend Server         && echo ==================================================== && echo Running on: http://localhost:5173 && echo. && npm run dev"
