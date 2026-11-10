@@ -37,3 +37,4 @@
 * Evaluated against the live FastAPI `/api/v1/analyze` pipeline.
 * OCR metrics are evaluated against reference transcriptions in `evaluation/transcriptions/`.
 * Images adhere to the de-identification and consent requirements detailed in `evaluation/README.md`.
+

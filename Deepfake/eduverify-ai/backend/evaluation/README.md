@@ -138,3 +138,4 @@ python calculate_metrics.py
 ### Outputs Generated:
 1. **Terminal Summary**: Real-time accuracy, precision, recall, F1, and average CER/WER.
 2. **`evaluation_report.md`**: Complete markdown report with confusion matrices and per-image forensic score breakdowns.
+
