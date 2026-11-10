@@ -1,0 +1,10 @@
+Half Adder
+A logic circuit that adds two one-bit binary numbers A and B and produces sum (S) and carry (C).
+Truth Table
+A B | S C
+0 0 | 0 0
+0 1 | 1 0
+1 0 | 1 0
+1 1 | 0 1
+Sum S = A ⊕ B
+Carry C = A · B
