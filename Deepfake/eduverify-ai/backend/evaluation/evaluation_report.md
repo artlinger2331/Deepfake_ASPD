@@ -7,7 +7,7 @@
 
 | Metric | Score | Target Standard |
 | :--- | :--- | :--- |
-| **Total Test Submissions** | 0 / 0 | Benchmark Suite |
+| **Total Test Submissions** | 0 / 8 | Benchmark Suite |
 | **Classification Accuracy** | **0.0%** | > 90% |
 | **Genuine Class Precision** | **0.0%** | > 90% (Low False Accusations) |
 | **Genuine Class Recall** | **0.0%** | > 85% |
@@ -21,20 +21,28 @@
 
 | Ground Truth \ Predicted | Predicted: Genuine | Predicted: Concern | Predicted: Uncertain | Other |
 | :--- | :---: | :---: | :---: | :---: |
-| **Actual: Genuine** | 0 | 0 | 0 | 0 |
-| **Actual: Concern** | 0 | 0 | 0 | 0 |
-| **Actual: Uncertain** | 0 | 0 | 0 | 0 |
+| **Actual: Genuine** | **0** | 0 | 0 | 0 |
+| **Actual: Concern** | 0 | **0** | 0 | 0 |
+| **Actual: Uncertain** | 0 | 0 | **0** | 0 |
 
 ---
 
 ## 3. Detailed Submission Benchmark Results
 
-*No benchmark results recorded yet. Populate `ground_truth.csv` and execute `python run_evaluation.py && python calculate_metrics.py`.*
+| Filename | Category | Expected Status | Predicted Status | Match | CER | WER | Forensic Signal Notes |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :--- |
+| `real_photo_001.jpg` | real_photo | genuine | NO_RESULT | ❌ | N/A | N/A | Run run_evaluation.py first |
+| `real_scan_001.png` | real_scan | genuine | NO_RESULT | ❌ | N/A | N/A | Run run_evaluation.py first |
+| `ai_generated_001.png` | ai_generated | concern | NO_RESULT | ❌ | N/A | N/A | Run run_evaluation.py first |
+| `edited_real_001.jpg` | edited_real | concern | NO_RESULT | ❌ | N/A | N/A | Run run_evaluation.py first |
+| `handwritten_clear_001.jpg` | handwritten_clear | genuine | NO_RESULT | ❌ | N/A | N/A | Run run_evaluation.py first |
+| `handwritten_blurry_001.jpg` | handwritten_blurry | genuine | NO_RESULT | ❌ | N/A | N/A | Run run_evaluation.py first |
+| `printed_text_001.jpg` | printed_text | genuine | NO_RESULT | ❌ | N/A | N/A | Run run_evaluation.py first |
+| `no_text_001.jpg` | no_text | genuine | NO_RESULT | ❌ | N/A | N/A | Run run_evaluation.py first |
 
 ---
 
-## 4. Evaluation Protocol & Ethics
+## 4. Evaluation Notes & Protocol
 * Evaluated against the live FastAPI `/api/v1/analyze` pipeline.
 * OCR metrics are evaluated against reference transcriptions in `evaluation/transcriptions/`.
 * Images adhere to the de-identification and consent requirements detailed in `evaluation/README.md`.
-
