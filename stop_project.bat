@@ -8,12 +8,12 @@ echo ========================================================
 echo.
 echo Stopping any running backend (port 8000)...
 for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":8000" ^| findstr "LISTENING"') do (
-    taskkill /F /PID %%a >nul 2>&1
+    taskkill /F /T /PID %%a >nul 2>&1
 )
 
 echo Stopping any running frontend (port 5173)...
 for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":5173" ^| findstr "LISTENING"') do (
-    taskkill /F /PID %%a >nul 2>&1
+    taskkill /F /T /PID %%a >nul 2>&1
 )
 
 echo.
