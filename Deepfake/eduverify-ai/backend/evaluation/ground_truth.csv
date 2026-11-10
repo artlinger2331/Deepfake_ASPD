@@ -1,9 +1,9 @@
 image_id,file_name,category,true_label,contains_handwriting,contains_printed_text,contains_no_text,source,generator,device,lighting,image_quality,reference_transcription_file,notes
-IMG_001,real_photo_001.jpg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,high,real_photo_001.txt,Authentic physics homework on ruled notebook paper
-IMG_002,real_scan_001.png,real_scan,real_scan,yes,no,no,scanner,none,scanner,artificial,high,real_scan_001.txt,Flatbed scanner capture of chemistry lab report
-IMG_003,ai_generated_001.png,ai_generated,ai_generated,yes,no,no,synthetic,stable_diffusion,none,artificial,high,ai_generated_001.txt,Diffusion generated cursive essay page
-IMG_004,edited_real_001.jpg,edited_real,edited_real,yes,no,no,manual_edit,none,iphone,indoor,medium,edited_real_001.txt,Authentic math exam with spliced grade in Photoshop
-IMG_005,handwritten_clear_001.jpg,handwritten_clear,real_photo,yes,no,no,phone,none,iphone,indoor,high,handwritten_clear_001.txt,High-contrast neat cursive student notes for OCR baseline
-IMG_006,handwritten_blurry_001.jpg,handwritten_blurry,real_photo,yes,no,no,phone,none,android,low_light,low,handwritten_blurry_001.txt,Challenging faint pencil notes with slight motion blur
-IMG_007,printed_text_001.jpg,printed_text,real_photo,no,yes,no,phone,none,android,outdoor,high,printed_text_001.txt,Typeset textbook assignment prompt without handwriting
-IMG_008,no_text_001.jpg,no_text,real_photo,no,no,yes,phone,none,iphone,indoor,medium,,Blank lined notebook page with zero text for hallucination testing
+IMG_001,half_adder_notes.jpg,handwritten_clear,real_photo,yes,no,no,phone,none,android,indoor,high,half_adder_notes.txt,Student handwritten engineering notebook on Half Adder logic circuit
+IMG_002,inverted_notebook.jpg,handwritten_blurry,real_photo,yes,no,no,phone,none,android,indoor,medium,half_adder_notes.txt,Handwritten student notes captured upside-down (180 deg) to evaluate orientation and OCR resilience
+IMG_003,printed_quote.jpg,printed_text,real_photo,no,yes,no,phone,none,none,artificial,high,printed_quote.txt,Printed typography assignment quote
+IMG_004,snippet_rot0.jpg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,medium,,Cropped real handwritten student work (0 deg upright)
+IMG_005,snippet_rot90.jpg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,medium,,Cropped real handwritten student work (90 deg rotated)
+IMG_006,snippet_rot180.jpg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,medium,,Cropped real handwritten student work (180 deg inverted)
+IMG_007,snippet_rot270.jpg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,medium,,Cropped real handwritten student work (270 deg rotated)
+IMG_008,blank_paper.jpg,no_text,real_photo,no,no,yes,scanner,none,none,artificial,high,blank_paper.txt,Blank paper canvas with zero text to verify hallucination safeguards
