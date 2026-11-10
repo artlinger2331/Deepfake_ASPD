@@ -166,11 +166,12 @@ def extract_response_fields(response_json: Dict[str, Any], ground_truth: Dict[st
 
 def run_evaluation(api_url: str, input_dir: Path, output_dir: Path,
                    limit: Optional[int] = None, timeout: int = 60,
-                   ground_truth_path: Path = DEFAULT_GROUND_TRUTH):
+                   ground_truth_path: Path = DEFAULT_GROUND_TRUTH,
+                   in_process: bool = False):
     print("========================================================")
     print("         EduVerify AI - Automated Evaluation Harness    ")
     print("========================================================")
-    print(f"Target API Endpoint : {api_url}")
+    print(f"Target Mode         : {'In-Process ASGI TestClient' if in_process else f'HTTP API ({api_url})'}")
     print(f"Input Images Dir    : {input_dir}")
     print(f"Output Results Dir  : {output_dir}")
     print(f"Request Timeout     : {timeout}s")
@@ -178,19 +179,29 @@ def run_evaluation(api_url: str, input_dir: Path, output_dir: Path,
         print(f"Processing Limit    : {limit} images")
     print("--------------------------------------------------------\n")
 
-    # 1. Verify Backend Connectivity
-    is_up, err_detail = check_backend_connection(api_url)
-    if not is_up:
-        print(f"[FATAL ERROR] Cannot connect to backend server!")
-        print(f"Reason: {err_detail}\n")
-        print("Please start the FastAPI backend server first:")
-        print("  Option 1: Double-click run_project.bat from the repository root")
-        print("  Option 2: Run in terminal:")
-        print("            cd eduverify-ai/backend")
-        print("            uvicorn main:app --port 8000 --reload\n")
-        sys.exit(1)
+    # 1. Backend Initialization / Connectivity Check
+    client = None
+    if in_process:
+        backend_dir = Path(__file__).resolve().parent.parent
+        if str(backend_dir) not in sys.path:
+            sys.path.insert(0, str(backend_dir))
+        from fastapi.testclient import TestClient
+        from main import app
+        client = TestClient(app)
+        print("[SUCCESS] In-process FastAPI ASGI client initialized.\n")
+    else:
+        is_up, err_detail = check_backend_connection(api_url)
+        if not is_up:
+            print(f"[FATAL ERROR] Cannot connect to backend server!")
+            print(f"Reason: {err_detail}\n")
+            print("Please start the FastAPI backend server first:")
+            print("  Option 1: Double-click run_project.bat from the repository root")
+            print("  Option 2: Run in terminal:")
+            print("            cd eduverify-ai/backend")
+            print("            uvicorn main:app --port 8001 --reload\n")
+            sys.exit(1)
 
-    print("[SUCCESS] FastAPI backend is active and responsive.\n")
+        print("[SUCCESS] FastAPI backend is active and responsive.\n")
 
     # 2. Discover Images & Ground Truth
     gt_map = load_ground_truth(ground_truth_path)
@@ -253,7 +264,12 @@ def run_evaluation(api_url: str, input_dir: Path, output_dir: Path,
                 mime_type = "image/jpeg"
 
             with open(img_path, "rb") as f:
-                files = {"file": (img_path.name, f, mime_type)}
+                file_bytes = f.read()
+
+            files = {"file": (img_path.name, file_bytes, mime_type)}
+            if client is not None:
+                r = client.post("/api/v1/analyze", files=files)
+            else:
                 r = requests.post(api_url, files=files, timeout=timeout)
 
             latency = time.time() - t0
@@ -326,6 +342,7 @@ if __name__ == "__main__":
     parser.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT_DIR, help=f"Directory to save JSON responses and CSV (default: {DEFAULT_OUTPUT_DIR})")
     parser.add_argument("--limit", type=int, default=None, help="Maximum number of images to evaluate (default: all)")
     parser.add_argument("--timeout", type=int, default=60, help="Per-request HTTP timeout in seconds (default: 60)")
+    parser.add_argument("--in-process", action="store_true", help="Run evaluation directly in-process via FastAPI TestClient (no HTTP server required)")
 
     args = parser.parse_args()
 
@@ -334,5 +351,6 @@ if __name__ == "__main__":
         input_dir=args.input_dir,
         output_dir=args.output_dir,
         limit=args.limit,
-        timeout=args.timeout
+        timeout=args.timeout,
+        in_process=args.in_process
     )
