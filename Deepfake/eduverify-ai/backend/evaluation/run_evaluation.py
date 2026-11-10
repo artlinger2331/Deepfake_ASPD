@@ -35,7 +35,7 @@ EVAL_DIR = Path(__file__).resolve().parent
 DEFAULT_GROUND_TRUTH = EVAL_DIR / "ground_truth.csv"
 DEFAULT_INPUT_DIR = EVAL_DIR / "images"
 DEFAULT_OUTPUT_DIR = EVAL_DIR / "results"
-DEFAULT_API_URL = "http://127.0.0.1:8000/api/v1/analyze"
+DEFAULT_API_URL = "http://127.0.0.1:8001/api/v1/analyze"
 SUPPORTED_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".bmp", ".tiff"}
 
 
