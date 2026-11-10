@@ -320,7 +320,7 @@ def generate_markdown_report(
         if (is_real and is_flagged) or (not is_real and not is_flagged):
             failures.append(d)
 
-    content = f"""# EduVerify AI — Forensic System Evaluation Audit Report
+    content = rf"""# EduVerify AI — Forensic System Evaluation Audit Report
 
 **Evaluation Date**: {today}  
 **Total Images Evaluated**: {decision_metrics['total_evaluated']}  
