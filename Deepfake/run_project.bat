@@ -30,8 +30,11 @@ if exist "%CURRENT_DIR%\Deepfake\eduverify-ai\backend\main.py" (
 set "BACKEND_DIR=%PROJECT_DIR%\backend"
 set "FRONTEND_DIR=%PROJECT_DIR%"
 
-:: 1. Clear any dangling processes on ports 8000 and 5173
-echo [1/4] Ensuring ports 8000 and 5173 are free...
+:: 1. Clear any dangling processes on ports 8001, 8000, and 5173
+echo [1/4] Ensuring ports 8001 and 5173 are free...
+for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":8001" ^| findstr "LISTENING"') do (
+    taskkill /F /T /PID %%a >nul 2>&1
+)
 for /f "tokens=5" %%a in ('netstat -aon ^| findstr ":8000" ^| findstr "LISTENING"') do (
     taskkill /F /T /PID %%a >nul 2>&1
 )
@@ -70,9 +73,9 @@ if exist "%BACKEND_DIR%\venv_gpu\Scripts\python.exe" (
 echo.
 echo [4/4] Launching Servers...
 if defined VENV_DIR (
-    start "EduVerify AI - Backend (FastAPI)" /D "%BACKEND_DIR%" cmd /k "call "%VENV_DIR%\Scripts\activate.bat" && title EduVerify AI - Backend && color 0B && echo ==================================================== && echo               EduVerify AI - Backend Server          && echo ==================================================== && echo Running on: http://localhost:8000 && echo Docs:       http://localhost:8000/docs && echo. && uvicorn main:app --port 8000 --reload"
+    start "EduVerify AI - Backend (FastAPI)" /D "%BACKEND_DIR%" cmd /k "call "%VENV_DIR%\Scripts\activate.bat" && title EduVerify AI - Backend && color 0B && echo ==================================================== && echo               EduVerify AI - Backend Server          && echo ==================================================== && echo Running on: http://localhost:8001 && echo Docs:       http://localhost:8001/docs && echo. && uvicorn main:app --port 8001"
 ) else (
-    start "EduVerify AI - Backend (FastAPI)" /D "%BACKEND_DIR%" cmd /k "title EduVerify AI - Backend && color 0B && echo ==================================================== && echo               EduVerify AI - Backend Server          && echo ==================================================== && echo Running on: http://localhost:8000 && echo Docs:       http://localhost:8000/docs && echo. && python -m uvicorn main:app --port 8000 --reload"
+    start "EduVerify AI - Backend (FastAPI)" /D "%BACKEND_DIR%" cmd /k "title EduVerify AI - Backend && color 0B && echo ==================================================== && echo               EduVerify AI - Backend Server          && echo ==================================================== && echo Running on: http://localhost:8001 && echo Docs:       http://localhost:8001/docs && echo. && python -m uvicorn main:app --port 8001"
 )
 
 start "EduVerify AI - Frontend (React + Vite)" /D "%FRONTEND_DIR%" cmd /k "title EduVerify AI - Frontend && color 0D && echo ==================================================== && echo               EduVerify AI - Frontend Server         && echo ==================================================== && echo Running on: http://localhost:5173 && echo. && npm run dev"
@@ -92,8 +95,8 @@ echo ========================================================
 echo [SUCCESS] EduVerify AI is up and running!
 echo.
 echo  * Frontend:  http://localhost:5173
-echo  * Backend:   http://localhost:8000
-echo  * API Docs:  http://localhost:8000/docs
+echo  * Backend:   http://localhost:8001
+echo  * API Docs:  http://localhost:8001/docs
 echo.
 echo  Tip: To stop the servers later, simply run stop_project.bat
 echo       or close the Backend and Frontend console windows.
