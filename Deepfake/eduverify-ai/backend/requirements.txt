@@ -1,0 +1,18 @@
+fastapi
+uvicorn
+python-multipart
+pydantic
+# Placeholders for future integration:
+# opencv-python
+# pytesseract
+# pillow
+pillow
+exifread
+pytesseract
+opencv-python-headless
+transformers
+qwen-vl-utils
+av
+accelerate
+psutil
+requests
