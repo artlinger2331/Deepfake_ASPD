@@ -1,0 +1,223 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  /* Color Palette - Calm, Professional, Trustworthy */
+  --color-primary: #0ea5e9;
+  --color-primary-hover: #0284c7;
+  --color-primary-light: #e0f2fe;
+  
+  --color-secondary: #0f172a;
+  --color-tertiary: #475569;
+  
+  --color-bg: #f8fafc;
+  --color-card-bg: #ffffff;
+  
+  --color-border: #e2e8f0;
+  
+  /* Status Colors */
+  --color-genuine: #10b981;
+  --color-genuine-light: #d1fae5;
+  
+  --color-concern: #f59e0b;
+  --color-concern-light: #fef3c7;
+  
+  --color-uncertain: #64748b;
+  --color-uncertain-light: #f1f5f9;
+
+  /* Neutrals */
+  --color-white: #ffffff;
+  --color-btn-primary-text: #ffffff;
+  
+  /* Badge text colors */
+  --color-genuine-text: #065f46;
+  --color-concern-text: #92400e;
+  --color-uncertain-text: #334155;
+  
+  /* Radii */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.dark {
+  --color-primary: #38bdf8;
+  --color-primary-hover: #7dd3fc;
+  --color-primary-light: rgba(56, 189, 248, 0.1);
+  
+  --color-secondary: #f8fafc;
+  --color-tertiary: #94a3b8;
+  
+  --color-bg: #0f172a;
+  --color-card-bg: #1e293b;
+  
+  --color-border: #334155;
+  
+  --color-genuine: #34d399;
+  --color-genuine-light: #065f46;
+  
+  --color-concern: #fbbf24;
+  --color-concern-light: #b45309;
+  
+  --color-uncertain: #94a3b8;
+  --color-uncertain-light: #334155;
+
+  --color-white: #1e293b;
+  --color-btn-primary-text: #0f172a;
+  
+  /* Badge text colors - bright for dark backgrounds */
+  --color-genuine-text: #6ee7b7;
+  --color-concern-text: #fcd34d;
+  --color-uncertain-text: #cbd5e1;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  background-color: var(--color-bg);
+  color: var(--color-secondary);
+  line-height: 1.5;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  text-decoration: none;
+  color: var(--color-primary);
+}
+
+ul, ol {
+  list-style: none;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  background: none;
+}
+
+/* Base Utility Classes */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Card Styling */
+.card {
+  background-color: var(--color-card-bg);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.5rem;
+  border-radius: var(--radius-md);
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-btn-primary-text);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.btn-secondary {
+  background-color: var(--color-white);
+  color: var(--color-secondary);
+  border: 1px solid var(--color-border);
+}
+
+.btn-secondary:hover {
+  background-color: var(--color-bg);
+}
+
+.btn-outline {
+  border: 1px solid var(--color-primary);
+  color: var(--color-primary);
+  background-color: transparent;
+}
+
+.btn-outline:hover {
+  background-color: var(--color-primary-light);
+}
+
+/* Flex utilities */
+.flex { display: flex; }
+.flex-col { display: flex; flex-direction: column; }
+.items-center { align-items: center; }
+.justify-between { justify-content: space-between; }
+.justify-center { justify-content: center; }
+.gap-2 { gap: 0.5rem; }
+.gap-4 { gap: 1rem; }
+.gap-6 { gap: 1.5rem; }
+.gap-8 { gap: 2rem; }
+
+/* Status Badges */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  gap: 0.375rem;
+}
+
+.badge-genuine {
+  background-color: var(--color-genuine-light);
+  color: var(--color-genuine-text);
+}
+
+.badge-concern {
+  background-color: var(--color-concern-light);
+  color: var(--color-concern-text);
+}
+
+.badge-uncertain {
+  background-color: var(--color-uncertain-light);
+  color: var(--color-uncertain-text);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-secondary);
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+h1 { font-size: 2.25rem; }
+h2 { font-size: 1.875rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+
+.text-muted { color: var(--color-tertiary); }
+.text-sm { font-size: 0.875rem; }
+.text-lg { font-size: 1.125rem; }
+.font-semibold { font-weight: 600; }
+.text-center { text-align: center; }

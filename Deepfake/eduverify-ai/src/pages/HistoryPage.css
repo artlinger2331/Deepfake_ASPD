@@ -1,0 +1,140 @@
+.max-w-4xl {
+  max-width: 1024px;
+  margin: 0 auto;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 640px) {
+  .page-header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}
+
+.controls-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+@media (max-width: 640px) {
+  .controls-bar {
+    flex-direction: column;
+  }
+}
+
+.search-box {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 1rem;
+  width: 100%;
+}
+
+.search-icon {
+  color: var(--color-tertiary);
+  margin-right: 0.5rem;
+}
+
+.search-input {
+  border: none;
+  background: transparent;
+  outline: none;
+  width: 100%;
+  font-size: 0.95rem;
+  color: var(--color-secondary);
+}
+
+.filter-box {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 0.5rem 1rem;
+  width: 100%;
+}
+
+@media (min-width: 640px) {
+  .filter-box {
+    width: auto;
+  }
+}
+
+.filter-select {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 0.95rem;
+  color: var(--color-secondary);
+  cursor: pointer;
+}
+
+.history-list {
+  padding: 0;
+  overflow: hidden;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.history-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.history-table th,
+.history-table td {
+  padding: 1rem 1.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.history-table th {
+  background-color: var(--color-bg);
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-tertiary);
+}
+
+.history-table tr:last-child td {
+  border-bottom: none;
+}
+
+.history-table tr:hover td {
+  background-color: var(--color-bg);
+}
+
+.text-right {
+  text-align: right;
+}
+
+.btn-icon-small {
+  color: var(--color-tertiary);
+  padding: 0.25rem;
+  border-radius: 4px;
+}
+
+.btn-icon-small:hover {
+  background-color: var(--color-border);
+  color: var(--color-primary);
+}
+
+.text-emerald-600 { color: var(--color-genuine); }
+.text-amber-600 { color: var(--color-concern); }
+.text-slate-600 { color: var(--color-tertiary); }

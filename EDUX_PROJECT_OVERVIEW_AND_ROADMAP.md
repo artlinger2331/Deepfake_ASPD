@@ -163,21 +163,3 @@ graph TB
 
 ---
 
-## 7. Strategic Research Questions for Perplexity AI
-
-*When uploading this document to Perplexity, use the following prompts to research cutting-edge advancements and next steps:*
-
-### Prompt 1: Vision-Language Model Verification & Self-Correction
-> *"Based on the attached EduVerify AI architecture dossier, evaluate the optimal architecture for a Two-Pass Visual Verification loop. How can a Vision-Language Model (Qwen2-VL-2B) cross-examine its own initial draft against document stroke projection profiles to detect skipped lines, recover substituted words, and suppress hallucinated sentences without doubling inference latency?"*
-
-### Prompt 2: Advanced Forensic Handwriting Synthesis Detection
-> *"Review the forensic feature extraction in EduVerify AI (currently using Laplacian edge variance and EXIF metadata). What state-of-the-art frequency-domain methods (e.g., 2D Discrete Cosine Transform (DCT) peak anomaly detection, Spec-ResNet, or pen-pressure pressure gradient variance) can be integrated to detect modern diffusion-based handwriting synthesizers (like Calligrapher or pen-plotter SVG engines)?"*
-
-### Prompt 3: Production Deployment & Cost Optimization
-> *"Analyze the deployment dilemma in Section 4.3 and 5. What is the most cost-effective architecture to host EduVerify AI in production? Compare: (A) Serverless GPU (Modal Labs / RunPod) vs. (B) Dedicated T4 GPU container (Hugging Face Spaces) vs. (C) Decoupled API architecture (FastAPI on CPU cloud calling external Vision APIs like Groq or Gemini Flash)."*
-
-### Prompt 4: C2PA Content Credentials Integration
-> *"How can EduVerify AI implement real-time validation of C2PA (Coalition for Content Provenance and Authenticity) manifests in Python to cryptographically prove if an image was captured by an authentic mobile phone sensor vs. exported from generative tools like DALL-E or Midjourney?"*
-
----
-*End of Dossier. Ready for upload to Perplexity AI.*
