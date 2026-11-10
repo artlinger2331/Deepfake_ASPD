@@ -74,3 +74,4 @@ for lbl, items in data_by_label.items():
     print(f"  FFT Ratio     : mean={np.mean(ffts):.4f}, median={np.median(ffts):.4f}, min={np.min(ffts):.4f}, max={np.max(ffts):.4f}")
     print(f"  Texture CV    : mean={np.mean(cvs):.4f}, median={np.median(cvs):.4f}, min={np.min(cvs):.4f}, max={np.max(cvs):.4f}")
     print(f"  Comp Ratio    : mean={np.mean(comps):.4f}, median={np.median(comps):.4f}, min={np.min(comps):.4f}, max={np.max(comps):.4f}")
+
