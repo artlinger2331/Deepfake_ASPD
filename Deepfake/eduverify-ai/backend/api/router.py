@@ -50,7 +50,7 @@ def analyze_image(file: UploadFile = File(...)):
             }
             
         # Step 4: Metadata (EXIF/C2PA)
-        metadata_result = process_metadata(file_bytes)
+        metadata_result = process_metadata(file_bytes, filename=file.filename or "")
         
         # Step 5: Multi-Signal Ethical Fusion
         final_report = fuse_results(vision_result, ocr_result, handwriting_result, metadata_result)
