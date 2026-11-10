@@ -68,11 +68,10 @@ def evaluate():
 
     with open(GROUND_TRUTH_PATH, mode="r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
-        records = [r for r in reader if r.get("filename", "").strip()]
+        records = [r for r in reader if (r.get("file_name") or r.get("filename") or "").strip()]
 
     if not records:
         print("[INFO] ground_truth.csv is empty. Add benchmark entries with ground truth annotations.")
-        print(f"Format: filename,category,expected_status,expected_synthetic,expected_edited,expected_has_text,transcription_file,notes")
         return
 
     total = len(records)
@@ -92,9 +91,18 @@ def evaluate():
     detailed_rows = []
 
     for row in records:
-        fname = row["filename"].strip()
+        fname = (row.get("file_name") or row.get("filename") or "").strip()
         stem = Path(fname).stem
-        expected_status = row.get("expected_status", "").strip().lower()
+        
+        # Derive expected status from true_label if expected_status is not explicit
+        true_label = row.get("true_label", "").strip().lower()
+        if true_label in ["real_photo", "real_scan"]:
+            expected_status = "genuine"
+        elif true_label in ["ai_generated", "edited_real"]:
+            expected_status = "concern"
+        else:
+            expected_status = row.get("expected_status", "uncertain").strip().lower()
+
         res_file = RESULTS_DIR / f"{stem}.json"
 
         if not res_file.exists():
@@ -128,7 +136,7 @@ def evaluate():
 
         # OCR evaluation
         cer_str, wer_str = "N/A", "N/A"
-        trans_file_name = row.get("transcription_file", "").strip()
+        trans_file_name = (row.get("reference_transcription_file") or row.get("transcription_file") or "").strip()
         if trans_file_name:
             trans_path = TRANSCRIPTIONS_DIR / trans_file_name
             if trans_path.exists():
