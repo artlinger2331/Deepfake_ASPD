@@ -719,7 +719,7 @@ def print_and_save_report(metrics: Dict[str, Any], output_path: Path):
 | :---: | :---: | :---: | :---: | :---: |
 """
     for th, res in b["threshold_sweeps"].items():
-        report_md += f"| **Score $\ge {th:.1f}$** | {res['accuracy']:.1f}% | {res['precision']:.1f}% | {res['recall']:.1f}% | {res['f1']:.1f}% |\n"
+        report_md += f"| **Score &ge; {th:.1f}** | {res['accuracy']:.1f}% | {res['precision']:.1f}% | {res['recall']:.1f}% | {res['f1']:.1f}% |\n"
 
     report_md += f"""
 ---
