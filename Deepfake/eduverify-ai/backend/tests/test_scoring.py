@@ -349,3 +349,4 @@ def test_api_response_format_and_backward_compatibility():
     assert "ocr" in report["signals"]
     assert "consistency" in report["signals"]
     assert "raw_inputs" in report
+

@@ -86,3 +86,4 @@ THRESHOLDS = DecisionThresholds()
 QUALITY_FACTORS = QualityAdjustmentFactors()
 
 FUSION_FORMULA_STR = "S = w_v * V_adjusted + w_m * M + w_p * P + w_c * C"
+
