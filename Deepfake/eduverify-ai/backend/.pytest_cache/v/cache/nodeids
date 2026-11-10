@@ -22,5 +22,14 @@
   "tests/test_evaluation.py::test_official_evaluation_report_contains_mandatory_ethical_disclaimer",
   "tests/test_evaluation.py::test_print_and_save_report_succeeds_with_missing_transcription_references",
   "tests/test_evaluation.py::test_results_csv_loads_and_merges_correctly",
-  "tests/test_evaluation.py::test_run_evaluation_exits_gracefully_when_no_images_found"
+  "tests/test_evaluation.py::test_run_evaluation_exits_gracefully_when_no_images_found",
+  "tests/test_scoring.py::test_api_response_format_and_backward_compatibility",
+  "tests/test_scoring.py::test_c2pa_provenance_score_calculation",
+  "tests/test_scoring.py::test_decision_threshold_classification",
+  "tests/test_scoring.py::test_fusion_formula_and_weights",
+  "tests/test_scoring.py::test_image_quality_adjustment_factor",
+  "tests/test_scoring.py::test_metadata_score_calculation_rules",
+  "tests/test_scoring.py::test_ocr_consistency_score_calculation",
+  "tests/test_scoring.py::test_visual_score_normalization_and_features",
+  "tests/test_scoring.py::test_visual_sterile_vs_noisy_noise_score"
 ]
