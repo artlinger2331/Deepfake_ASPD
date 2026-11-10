@@ -40,3 +40,4 @@ evaluation/
 
 4. **Pedagogical Use Only**:
    * Results from this evaluation suite measure the statistical reliability of the forensic decision-support pipeline. A high synthetic score or metadata flag must **never** be used as standalone evidence of academic dishonesty.
+
