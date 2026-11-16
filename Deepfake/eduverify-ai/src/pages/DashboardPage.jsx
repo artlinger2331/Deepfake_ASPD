@@ -53,6 +53,7 @@ const DashboardPage = () => {
 
   // Retrieve preview image
   const previewImage = location.state?.previewUrl || sessionStorage.getItem(`preview_${id}`);
+  const displayImage = previewImage || report.oriented_image_base64 || report.document_image;
 
   // Extract signals robustly from live report
   const extractedText = 
@@ -279,9 +280,9 @@ const DashboardPage = () => {
             </div>
 
             <div className="analyzed-image-wrapper">
-              {(report.oriented_image_base64 || previewImage) ? (
+              {displayImage ? (
                 <img 
-                  src={report.oriented_image_base64 || previewImage} 
+                  src={displayImage} 
                   alt="Student Assignment Preview" 
                   className="analyzed-image"
                   style={{ width: '100%', maxHeight: '420px', objectFit: 'contain', borderRadius: '8px' }}

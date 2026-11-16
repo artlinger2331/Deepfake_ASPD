@@ -19,10 +19,31 @@ Formula:
 """
 
 import io
+from pathlib import Path
 import cv2
 import numpy as np
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, Optional
 from ..config import VISUAL_WEIGHTS, QUALITY_FACTORS
+
+_ML_DETECTOR: Optional[Dict[str, Any]] = None
+_ML_LOAD_ATTEMPTED: bool = False
+
+
+def _get_ml_detector() -> Optional[Dict[str, Any]]:
+    """Loads the trained ML visual detector model if available on disk."""
+    global _ML_DETECTOR, _ML_LOAD_ATTEMPTED
+    if not _ML_LOAD_ATTEMPTED:
+        model_path = Path(__file__).resolve().parent.parent.parent / "models" / "visual_detector.joblib"
+        if model_path.exists():
+            try:
+                import joblib
+                _ML_DETECTOR = joblib.load(model_path)
+                print(f"[Vision] Successfully loaded trained ML visual detector from {model_path.name}")
+            except Exception as e:
+                print(f"[Vision] Failed to load trained ML model: {e}")
+                _ML_DETECTOR = None
+        _ML_LOAD_ATTEMPTED = True
+    return _ML_DETECTOR
 
 
 def _clamp(val: float, min_val: float = 0.0, max_val: float = 1.0) -> float:
@@ -279,15 +300,38 @@ def process_vision(image_bytes: bytes) -> Dict[str, Any]:
         s_texture, raw_cv = compute_texture_uniformity_score(gray)
         s_comp, raw_comp = compute_compression_artifact_score(gray)
         
-        # 2. Weighted multi-feature visual synthetic score
+        # 2. Calibrated visual synthetic score (ML detector with heuristic fallback)
         w = VISUAL_WEIGHTS
-        raw_visual_score = (
-            w.laplacian * s_lap +
-            w.noise * s_noise +
-            w.high_freq_fft * s_fft +
-            w.texture_uniformity * s_texture +
-            w.compression_artifacts * s_comp
-        )
+        detector = _get_ml_detector()
+        used_ml = False
+
+        if detector is not None and "model" in detector:
+            try:
+                log_lap = float(np.log10(raw_lap + 1.0))
+                feat_vec = np.array([[
+                    s_noise, s_fft, s_lap, s_texture, s_comp,
+                    raw_noise, raw_fft, log_lap, raw_cv, raw_comp
+                ]], dtype=np.float32)
+                raw_visual_score = float(detector["model"].predict_proba(feat_vec)[0][1])
+                used_ml = True
+            except Exception as e:
+                used_ml = False
+                raw_visual_score = (
+                    w.laplacian * s_lap +
+                    w.noise * s_noise +
+                    w.high_freq_fft * s_fft +
+                    w.texture_uniformity * s_texture +
+                    w.compression_artifacts * s_comp
+                )
+        else:
+            raw_visual_score = (
+                w.laplacian * s_lap +
+                w.noise * s_noise +
+                w.high_freq_fft * s_fft +
+                w.texture_uniformity * s_texture +
+                w.compression_artifacts * s_comp
+            )
+
         raw_visual_score = _clamp(raw_visual_score, 0.0, 1.0)
         
         # 3. Quality adjustment
@@ -317,6 +361,7 @@ def process_vision(image_bytes: bytes) -> Dict[str, Any]:
                 "quality_factor": q_factor,
                 "quality_label": q_label,
                 "quality_notes": q_notes,
+                "detector_type": "calibrated_random_forest" if used_ml else "heuristic_multi_feature",
                 "features": {
                     "laplacian_edge_score": round(s_lap, 4),
                     "raw_laplacian_variance": round(raw_lap, 2),

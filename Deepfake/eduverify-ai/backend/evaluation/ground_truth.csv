@@ -1,9 +1,41 @@
 image_id,file_name,category,true_label,contains_handwriting,contains_printed_text,contains_no_text,source,generator,device,lighting,image_quality,reference_transcription_file,notes
-IMG_001,half_adder_notes.jpg,handwritten_clear,real_photo,yes,no,no,phone,none,android,indoor,high,half_adder_notes.txt,Student handwritten engineering notebook on Half Adder logic circuit
-IMG_002,inverted_notebook.jpg,handwritten_blurry,real_photo,yes,no,no,phone,none,android,indoor,medium,half_adder_notes.txt,Handwritten student notes captured upside-down (180 deg) to evaluate orientation and OCR resilience
-IMG_003,printed_quote.jpg,printed_text,real_photo,no,yes,no,phone,none,none,artificial,high,printed_quote.txt,Printed typography assignment quote
-IMG_004,snippet_rot0.jpg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,medium,,Cropped real handwritten student work (0 deg upright)
-IMG_005,snippet_rot90.jpg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,medium,,Cropped real handwritten student work (90 deg rotated)
-IMG_006,snippet_rot180.jpg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,medium,,Cropped real handwritten student work (180 deg inverted)
-IMG_007,snippet_rot270.jpg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,medium,,Cropped real handwritten student work (270 deg rotated)
-IMG_008,blank_paper.jpg,no_text,real_photo,no,no,yes,scanner,none,none,artificial,high,blank_paper.txt,Blank paper canvas with zero text to verify hallucination safeguards
+IMG_001,WhatsApp Image 2026-11-10 at 11.04.28 PM.jpeg,ai_generated,ai_generated,yes,no,no,ai,diffusion,none,artificial,high,,Ai Generated benchmark sample
+IMG_002,WhatsApp Image 2026-11-10 at 11.06.16 PM.jpeg,ai_generated,ai_generated,yes,no,no,ai,diffusion,none,artificial,high,,Ai Generated benchmark sample
+IMG_003,WhatsApp Image 2026-11-10 at 11.08.20 PM.jpeg,ai_generated,ai_generated,yes,no,no,ai,diffusion,none,artificial,high,,Ai Generated benchmark sample
+IMG_004,WhatsApp Image 2026-11-10 at 11.21.49 PM.jpeg,ai_generated,ai_generated,yes,no,no,ai,diffusion,none,artificial,high,,Ai Generated benchmark sample
+IMG_005,WhatsApp Image 2026-11-10 at 11.22.49 PM.jpeg,ai_generated,ai_generated,yes,no,no,ai,diffusion,none,artificial,high,,Ai Generated benchmark sample
+IMG_006,WhatsApp Image 2026-11-10 at 9.32.22 PM.jpeg,ai_generated,ai_generated,yes,no,no,ai,diffusion,none,artificial,high,,Ai Generated benchmark sample
+IMG_007,WhatsApp Image 2026-11-10 at 9.38.32 PM.jpeg,ai_generated,ai_generated,yes,no,no,ai,diffusion,none,artificial,high,,Ai Generated benchmark sample
+IMG_008,WhatsApp Image 2026-11-10 at 9.41.59 PM.jpeg,ai_generated,ai_generated,yes,no,no,ai,diffusion,none,artificial,high,,Ai Generated benchmark sample
+IMG_009,WhatsApp Image 2026-11-10 at 11.33.51 PM.jpeg,edited_real,edited_real,yes,no,no,software,none,android,indoor,high,,Edited Real benchmark sample
+IMG_010,WhatsApp Image 2026-11-10 at 11.36.51 PM.jpeg,edited_real,edited_real,yes,no,no,software,none,android,indoor,high,,Edited Real benchmark sample
+IMG_011,WhatsApp Image 2026-11-10 at 11.30.05 PM.jpeg,handwritten_blurry,real_photo,yes,no,no,phone,none,android,indoor,low,,Handwritten Blurry benchmark sample
+IMG_012,WhatsApp Image 2026-11-10 at 11.30.27 PM.jpeg,handwritten_blurry,real_photo,yes,no,no,phone,none,android,indoor,low,,Handwritten Blurry benchmark sample
+IMG_013,WhatsApp Image 2026-11-10 at 11.36.02 PM.jpeg,handwritten_blurry,real_photo,yes,no,no,phone,none,android,indoor,low,,Handwritten Blurry benchmark sample
+IMG_014,WhatsApp Image 2026-11-10 at 9.40.40 PM.jpeg,handwritten_blurry,real_photo,yes,no,no,phone,none,android,indoor,low,,Handwritten Blurry benchmark sample
+IMG_015,WhatsApp Image 2026-11-10 at 9.41.08 PM.jpeg,handwritten_blurry,real_photo,yes,no,no,phone,none,android,indoor,low,,Handwritten Blurry benchmark sample
+IMG_016,WhatsApp Image 2026-11-04 at 12.30.55 AM.jpeg,handwritten_clear,real_photo,yes,no,no,phone,none,android,indoor,high,,Handwritten Clear benchmark sample
+IMG_017,WhatsApp Image 2026-11-04 at 12.54.22 AM.jpeg,handwritten_clear,real_photo,yes,no,no,phone,none,android,indoor,high,,Handwritten Clear benchmark sample
+IMG_018,WhatsApp Image 2026-11-10 at 11.18.24 PM.jpeg,handwritten_clear,real_photo,yes,no,no,phone,none,android,indoor,high,,Handwritten Clear benchmark sample
+IMG_019,blank_paper.jpg,no_text,real_photo,no,no,yes,scanner,none,none,artificial,high,blank_paper.txt,Blank paper canvas with zero text to verify hallucination safeguards
+IMG_020,WhatsApp Image 2026-11-10 at 11.51.08 PM.jpeg,printed_text,real_photo,no,yes,no,phone,none,android,indoor,high,,Printed Text benchmark sample
+IMG_021,WhatsApp Image 2026-11-10 at 11.51.35 PM.jpeg,printed_text,real_photo,no,yes,no,phone,none,android,indoor,high,,Printed Text benchmark sample
+IMG_022,WhatsApp Image 2026-11-10 at 11.53.12 PM.jpeg,printed_text,real_photo,no,yes,no,phone,none,android,indoor,high,,Printed Text benchmark sample
+IMG_023,WhatsApp Image 2026-11-10 at 11.58.07 PM.jpeg,printed_text,real_photo,no,yes,no,phone,none,android,indoor,high,,Printed Text benchmark sample
+IMG_024,WhatsApp Image 2026-11-10 at 11.59.07 PM.jpeg,printed_text,real_photo,no,yes,no,phone,none,android,indoor,high,,Printed Text benchmark sample
+IMG_025,WhatsApp Image 2026-11-11 at 12.00.04 AM.jpeg,printed_text,real_photo,no,yes,no,phone,none,android,indoor,high,,Printed Text benchmark sample
+IMG_026,WhatsApp Image 2026-11-11 at 12.03.55 AM.jpeg,printed_text,real_photo,no,yes,no,phone,none,android,indoor,high,,Printed Text benchmark sample
+IMG_027,WhatsApp Image 2026-11-11 at 12.04.29 AM.jpeg,printed_text,real_photo,no,yes,no,phone,none,android,indoor,high,,Printed Text benchmark sample
+IMG_028,WhatsApp Image 2026-11-10 at 11.43.36 PM.jpeg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,high,,Real Photo benchmark sample
+IMG_029,WhatsApp Image 2026-11-10 at 7.59.51 PM.jpeg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,high,,Real Photo benchmark sample
+IMG_030,WhatsApp Image 2026-11-10 at 8.19.43 PM.jpeg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,high,,Real Photo benchmark sample
+IMG_031,WhatsApp Image 2026-11-10 at 8.20.35 PM.jpeg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,high,,Real Photo benchmark sample
+IMG_032,snippet_rot0.jpg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,medium,,Cropped real handwritten student work (0 deg upright)
+IMG_033,snippet_rot180.jpg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,medium,,Cropped real handwritten student work (180 deg inverted)
+IMG_034,snippet_rot270.jpg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,medium,,Cropped real handwritten student work (270 deg rotated)
+IMG_035,snippet_rot90.jpg,real_photo,real_photo,yes,no,no,phone,none,android,indoor,medium,,Cropped real handwritten student work (90 deg rotated)
+IMG_036,DocScanner 12-Oct-2026 12-54 AM_page_1.jpg,real_scan,real_scan,yes,no,no,scanner,none,scanner,indoor,high,,Real Scan benchmark sample
+IMG_037,DocScanner 14-Oct-2026 01-56 AM_page_1.jpg,real_scan,real_scan,yes,no,no,scanner,none,scanner,indoor,high,,Real Scan benchmark sample
+IMG_038,WhatsApp Image 2026-11-10 at 11.15.45 PM.jpeg,real_scan,real_scan,yes,no,no,scanner,none,scanner,indoor,high,,Real Scan benchmark sample
+IMG_039,WhatsApp Image 2026-11-10 at 11.16.54 PM.jpeg,real_scan,real_scan,yes,no,no,scanner,none,scanner,indoor,high,,Real Scan benchmark sample
+IMG_040,Handwritten Winter Essay.png,ai_generated,ai_generated,yes,no,no,ai,chatgpt_dalle3,none,artificial,high,,ChatGPT DALL-E 3 synthetic handwritten notebook page

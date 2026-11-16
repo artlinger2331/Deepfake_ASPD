@@ -119,10 +119,27 @@ def calculate_ocr_consistency_score(
         c += 0.15
         observations.append("Image exhibits sterile paper background with absence of physical camera sensor noise.")
 
-    # 3. High confidence but unreadable/unnatural characters
+    # 3. Multimodal VLM forensic signals & stroke analysis
+    vlm_forensics = ocr_info.get("vlm_forensics", {})
+    vlm_verdict = vlm_forensics.get("vlm_verdict")
+    vlm_reasons = vlm_forensics.get("reasons", [])
+
+    v_raw_val = float(v_info.get("raw_visual_score", 0.15))
     if ocr_conf > 90.0 and "[unclear]" in extracted_text and word_count < 4:
         c += 0.20
         observations.append("High model confidence accompanied by visual stroke dissonance.")
+    elif ocr_conf >= 90.0 and (v_raw_val >= 0.55 or vlm_verdict == "ai_generated"):
+        c += 0.20
+        observations.append("High model OCR confidence observed across rigid or synthetic letterforms.")
+
+    if vlm_verdict == "ai_generated":
+        c += 0.25
+        if vlm_reasons:
+            observations.append(f"Forensic indicator: {vlm_reasons[0]}")
+        else:
+            observations.append("Synthetic handwriting stroke alignment and artificial glyph uniformity detected.")
+    elif vlm_verdict == "authentic":
+        observations.append("Organic stroke variation, natural hand pressure, and authentic baseline flow confirmed.")
 
     # Clamp score
     c_score = _clamp(c, 0.0, 1.0)
@@ -171,6 +188,30 @@ def fuse_results(
 
     # OCR & Consistency
     c_score, c_status, c_obs = calculate_ocr_consistency_score(ocr_data, handwriting_data, vision_data)
+
+    # Multimodal VLM forensic evaluation integration
+    ocr_info = ocr_data.get("data", {}) if ocr_data else {}
+    vlm_forensics = ocr_info.get("vlm_forensics", {})
+    vlm_score = vlm_forensics.get("vlm_synthetic_score")
+    vlm_verdict = vlm_forensics.get("vlm_verdict")
+    vlm_reasons = vlm_forensics.get("reasons", [])
+
+    if vlm_score is not None:
+        if vlm_verdict == "ai_generated":
+            # Multi-modal triangulation: if statistical detector also detects synthetic patterns (>= 0.50)
+            if v_raw >= 0.50:
+                blended_v = 0.60 * vlm_score + 0.40 * v_raw
+                v_adjusted = max(v_adjusted, round(_clamp(blended_v * q_factor, 0.0, 1.0), 4))
+                if vlm_score >= 0.85:
+                    v_adjusted = max(v_adjusted, round(0.95 * q_factor, 4))
+            else:
+                # Modalities disagree: statistical features indicate physical capture; apply conservative blend
+                blended_v = 0.35 * vlm_score + 0.65 * v_raw
+                v_adjusted = round(_clamp(blended_v * q_factor, 0.0, 1.0), 4)
+        elif vlm_verdict == "authentic":
+            # Real student writing dynamics confirm authenticity; dampen optical artifacts only if v_raw isn't strongly synthetic
+            if v_raw < 0.55:
+                v_adjusted = min(v_adjusted, round(_clamp((0.40 * v_adjusted + 0.60 * vlm_score), 0.0, 1.0), 4))
 
     # -------------------------------------------------------------------------
     # 2. Configurable Fusion Formula: S = w_v*V_adj + w_m*M + w_p*P + w_c*C
@@ -252,7 +293,11 @@ def fuse_results(
     # Visual explanation
     art_notes = v_data.get("artifact_notes", [])
     q_notes = v_data.get("quality_notes", [])
-    vis_explanation = " ".join(art_notes + q_notes) or "Visual features and stroke profiles evaluated."
+    all_notes = list(art_notes)
+    if vlm_reasons:
+        all_notes.extend([f"Forensics: {r}" for r in vlm_reasons])
+    all_notes.extend(q_notes)
+    vis_explanation = " ".join(all_notes) or "Visual features and stroke profiles evaluated."
 
     # Consistency points list for dashboard UI
     consistency_points = list(c_obs)
@@ -283,7 +328,8 @@ def fuse_results(
                 "quality_factor": q_factor,
                 "score": int(round(v_adjusted * 100)),  # legacy 0-100
                 "label": "Low synthetic patterns" if v_adjusted < 0.40 else "Synthetic patterns detected",
-                "explanation": vis_explanation
+                "explanation": vis_explanation,
+                "vlm_forensics": vlm_forensics
             },
             "metadata": {
                 "score": m_score,

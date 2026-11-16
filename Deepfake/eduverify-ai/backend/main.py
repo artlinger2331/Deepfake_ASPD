@@ -1,6 +1,33 @@
+import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.router import router as api_router
+
+# Windows console / pipe disconnection guard to prevent [WinError 233] on sys.stdout/stderr
+class SafeStream:
+    def __init__(self, target):
+        self._target = target
+
+    def write(self, s):
+        try:
+            return self._target.write(s)
+        except OSError:
+            pass
+
+    def flush(self):
+        try:
+            return self._target.flush()
+        except OSError:
+            pass
+
+    def __getattr__(self, attr):
+        return getattr(self._target, attr)
+
+if sys.platform == "win32":
+    if sys.stdout is not None:
+        sys.stdout = SafeStream(sys.stdout)
+    if sys.stderr is not None:
+        sys.stderr = SafeStream(sys.stderr)
 
 app = FastAPI(
     title="EduVerify AI Backend",

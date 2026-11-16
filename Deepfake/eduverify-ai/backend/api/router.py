@@ -31,7 +31,7 @@ def analyze_image(file: UploadFile = File(...)):
         vision_result = process_vision(file_bytes)
         
         # Step 2: GPU Multimodal OCR (Qwen2-VL)
-        ocr_result = process_ocr(file_bytes)
+        ocr_result = process_ocr(file_bytes, filename=file.filename)
         ocr_text = ocr_result.get("data", {}).get("extracted_text", "")
         
         # Step 3: Handwriting extraction (skip TrOCR hallucination when Qwen succeeds)

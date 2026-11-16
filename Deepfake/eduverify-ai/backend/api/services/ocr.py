@@ -119,13 +119,145 @@ def _run_inference(image: Image.Image, system_msg: str, user_prompt: str,
     
     return output
 
-def extract_ocr(image_bytes: bytes) -> Dict[str, Any]:
+def _run_forensic_inference(image: Image.Image, system_msg: str, user_prompt: str,
+                            max_tokens: int = 180) -> str:
+    from qwen_vl_utils import process_vision_info
+    
+    messages = [
+        {"role": "system", "content": system_msg},
+        {
+            "role": "user",
+            "content": [
+                {"type": "image", "image": image},
+                {"type": "text", "text": user_prompt}
+            ]
+        }
+    ]
+    
+    prompt = qwen_processor.apply_chat_template(
+        messages, 
+        tokenize=False, 
+        add_generation_prompt=True
+    )
+    
+    image_inputs, video_inputs = process_vision_info(messages)
+    
+    inputs = qwen_processor(
+        text=[prompt],
+        images=image_inputs,
+        videos=video_inputs,
+        padding=True,
+        return_tensors="pt"
+    )
+    
+    if torch.cuda.is_available():
+        inputs = inputs.to("cuda")
+        
+    generate_ids = qwen_model.generate(
+        **inputs, 
+        max_new_tokens=max_tokens
+    )
+    
+    generated_ids_trimmed = [
+        out_ids[len(inputs.input_ids[0]):] for out_ids in generate_ids
+    ]
+    
+    output = qwen_processor.batch_decode(
+        generated_ids_trimmed, skip_special_tokens=True, clean_up_tokenization_spaces=False
+    )[0].strip()
+    
+    return output
+
+def evaluate_vlm_forensics(image: Image.Image) -> Dict[str, Any]:
+    """
+    Multimodal visual forensic evaluation for synthetic handwriting and AI notebook artifacts.
+    Evaluates stroke geometry, baseline slant, glyph variation, and paper lighting.
+    """
+    default_res = {
+        "vlm_synthetic_score": 0.50,
+        "vlm_verdict": "uncertain",
+        "confidence": "MODERATE",
+        "reasons": []
+    }
+    
+    if qwen_model is None or qwen_processor is None:
+        return default_res
+        
+    try:
+        prep = image.copy()
+        if max(prep.size) > 1024:
+            prep.thumbnail((1024, 1024), Image.Resampling.LANCZOS)
+            
+        sys_msg = (
+            "You are an objective document forensic assistant. Carefully inspect the visual handwriting strokes.\n"
+            "Real human handwriting has organic imperfections, variations in pen pressure, ink thickness, "
+            "natural slant, and physical paper texture.\n"
+            "AI generation or digital font rendering exhibits identical carbon-copy letter glyphs, machine-rigid baselines, "
+            "and unnatural stroke uniformity."
+        )
+        user_prompt = (
+            "Examine the physical handwriting in this document image.\n"
+            "CRITICAL: Base your decision ONLY on the visual strokes, ink, and penmanship. "
+            "DO NOT judge based on the topic or subject matter (lecture notes about computers, technology, or science are normal student coursework).\n"
+            "Does this exhibit natural human handwriting variations, or is it synthetic/AI-generated text?\n"
+            "Respond strictly in this format:\n"
+            "VERDICT: [AUTHENTIC_PHYSICAL or AI_GENERATED]\n"
+            "REASONS:\n"
+            "- [observation 1]\n"
+            "- [observation 2]"
+        )
+        
+        raw_output = _run_forensic_inference(prep, sys_msg, user_prompt, max_tokens=150)
+        
+        verdict = "uncertain"
+        score = 0.50
+        conf_str = "MODERATE"
+        
+        upper = raw_output.upper()
+        # Parse verdict line
+        verdict_part = upper.split("VERDICT:")[1].splitlines()[0] if "VERDICT:" in upper else upper
+        if "AI_GENERATED" in verdict_part:
+            verdict = "ai_generated"
+            score = 0.90
+            conf_str = "HIGH"
+        elif "AUTHENTIC_PHYSICAL" in verdict_part or "AUTHENTIC" in verdict_part:
+            verdict = "authentic"
+            score = 0.15
+            conf_str = "HIGH"
+            
+        reasons = []
+        for line in raw_output.splitlines():
+            line_str = line.strip()
+            if line_str.startswith(("-", "•", "*")):
+                cleaned_line = line_str.lstrip("-•* ").strip()
+                if cleaned_line and len(cleaned_line) > 5:
+                    reasons.append(cleaned_line)
+            elif re.match(r'^\d+[\.\)]\s*', line_str):
+                cleaned_line = re.sub(r'^\d+[\.\)]\s*', '', line_str).strip()
+                if cleaned_line and len(cleaned_line) > 5:
+                    reasons.append(cleaned_line)
+                    
+        return {
+            "vlm_synthetic_score": round(score, 4),
+            "vlm_verdict": verdict,
+            "confidence": conf_str,
+            "reasons": reasons[:3],
+            "raw_response": raw_output
+        }
+    except Exception as e:
+        print(f"[OCR] VLM forensic evaluation exception: {e}")
+        return default_res
+
+def extract_ocr(image_bytes: bytes, filename: Optional[str] = None) -> Dict[str, Any]:
+    from .orientation import raw_bytes_to_base64_data_uri
+    verbatim_data_uri = raw_bytes_to_base64_data_uri(image_bytes, filename=filename)
+
     result = {
         "extracted_text": "",
         "confidence_score": 0.0,
         "word_count": 0,
         "is_readable": False,
-        "oriented_image_base64": ""
+        "oriented_image_base64": verbatim_data_uri
     }
     
     try:
@@ -136,14 +268,13 @@ def extract_ocr(image_bytes: bytes) -> Dict[str, Any]:
             detect_stroke_is_sideways,
             score_reading_flow,
             apply_fine_deskew, 
-            image_to_base64_data_uri
+            image_to_base64_data_uri,
+            raw_bytes_to_base64_data_uri
         )
         
         raw_img = normalize_image(Image.open(io.BytesIO(image_bytes)))
-        
-        # Stage 1: Individual letter stroke alignment analysis
-        is_sideways = detect_stroke_is_sideways(raw_img)
-        cand1, cand2 = (90, 270) if is_sideways else (0, 180)
+        # Strictly preserve raw uploaded image bytes verbatim for display
+        result["oriented_image_base64"] = verbatim_data_uri
         
         sys_msg = (
             "You are a master document OCR engine. Accurately transcribe all handwritten text, "
@@ -166,39 +297,45 @@ def extract_ocr(image_bytes: bytes) -> Dict[str, Any]:
             flow = score_reading_flow(cleaned)
             return img, cleaned, words, flow
             
-        # Test candidate 1 (0° for normal/inverted, 90° for sideways)
-        img1, text1, words1, flow1 = evaluate_candidate(cand1)
-        w1_count = len(words1)
-        print(f"[OCR] Candidate {cand1}°: {w1_count} words, flow score={flow1}. Top line: {text1.splitlines()[:1]}")
+        # Stage 1: Always evaluate candidate 0° (the natural, upright orientation as uploaded)
+        img0, text0, words0, flow0 = evaluate_candidate(0)
+        w0_count = len(words0)
+        print(f"[OCR] Candidate 0° (Original): {w0_count} words, flow score={flow0}. Top line: {text0.splitlines()[:1]}")
         
-        best_angle = cand1
-        best_img = img1
-        best_text = text1
-        best_words = words1
+        best_angle = 0
+        best_img = img0
+        best_text = text0
+        best_words = words0
         
-        # Determine if candidate 2 (opposite 180° rotation) should be evaluated:
-        # - Always test for sideways images (to choose between 90° vs 270°)
-        # - Test if candidate 1 had low word count (< 25 words)
-        # - Test if candidate 1 had doubtful or inverted reading flow (flow_score < 10)
-        need_test_cand2 = is_sideways or (w1_count < 25) or (flow1 < 10)
+        # Only search alternative orientations if 0° failed to read text:
+        # If 0° already produces legitimate words (>= 8),
+        # the document is already straight and upright. Never rotate it away from 0°.
+        need_alternative_test = (w0_count < 8)
         
-        if need_test_cand2:
-            img2, text2, words2, flow2 = evaluate_candidate(cand2)
-            w2_count = len(words2)
-            print(f"[OCR] Candidate {cand2}°: {w2_count} words, flow score={flow2}. Top line: {text2.splitlines()[:1]}")
-            
-            rank1 = w1_count + 2 * flow1
-            rank2 = w2_count + 2 * flow2
-            print(f"[OCR] Comparing candidate ranks -> {cand1}°: {rank1} vs {cand2}°: {rank2}")
-            
-            if rank2 > rank1:
-                print(f"[OCR] Selected {cand2}° as optimal upright orientation")
-                best_angle = cand2
-                best_img = img2
-                best_text = text2
-                best_words = words2
-            else:
-                print(f"[OCR] Retained {cand1}° as optimal upright orientation")
+        if need_alternative_test:
+            candidates_to_try = [180]
+            if w0_count < 5:
+                candidates_to_try.extend([90, 270])
+                
+            for alt_angle in candidates_to_try:
+                img_alt, text_alt, words_alt, flow_alt = evaluate_candidate(alt_angle)
+                w_alt = len(words_alt)
+                print(f"[OCR] Candidate {alt_angle}°: {w_alt} words, flow score={flow_alt}. Top line: {text_alt.splitlines()[:1]}")
+                
+                # Require substantial superiority to rotate away from 0°
+                is_significantly_better = (
+                    (w_alt >= 12 and w_alt > w0_count * 2 + 5) or
+                    (w0_count == 0 and w_alt >= 5)
+                )
+                if is_significantly_better:
+                    print(f"[OCR] Selected {alt_angle}° as superior orientation (words={w_alt}, flow={flow_alt} vs 0° words={w0_count}, flow={flow0})")
+                    best_angle = alt_angle
+                    best_img = img_alt
+                    best_text = text_alt
+                    best_words = words_alt
+                    break
+                else:
+                    print(f"[OCR] Retained 0° (alternative {alt_angle}° not significantly better)")
                 
         word_count = len(best_words)
         
@@ -218,7 +355,12 @@ def extract_ocr(image_bytes: bytes) -> Dict[str, Any]:
         result["confidence_score"] = confidence_score
         result["word_count"] = word_count
         result["is_readable"] = word_count > 0
-        result["oriented_image_base64"] = image_to_base64_data_uri(best_img)
+        # The returned image ALWAYS strictly preserves raw uploaded image bytes verbatim
+        result["oriented_image_base64"] = verbatim_data_uri
+        
+        # Stage 3: Dedicated VLM Forensic Pass on upright document
+        vlm_forensics = evaluate_vlm_forensics(best_img)
+        result["vlm_forensics"] = vlm_forensics
         
     except Exception as e:
         error_msg = f"ERROR: {str(e)}"
@@ -227,11 +369,11 @@ def extract_ocr(image_bytes: bytes) -> Dict[str, Any]:
         
     return result
 
-def process_ocr(image_bytes: bytes) -> Dict[str, Any]:
+def process_ocr(image_bytes: bytes, filename: Optional[str] = None) -> Dict[str, Any]:
     """
     Multimodal OCR service using GPU-accelerated Qwen2-VL.
     """
-    data = extract_ocr(image_bytes)
+    data = extract_ocr(image_bytes, filename=filename)
     return {
         "status": "success",
         "module": "ocr",

@@ -85,10 +85,14 @@ const UploadPage = () => {
 
       // Save report and preview into storage
       const reportId = reportData.id || reportData.analysis_id || `EV-${Date.now()}`;
-      if (previewUrl) {
-        sessionStorage.setItem(`preview_${reportId}`, previewUrl);
+      try {
+        if (previewUrl) {
+          sessionStorage.setItem(`preview_${reportId}`, previewUrl);
+        }
+        sessionStorage.setItem(`report_${reportId}`, JSON.stringify(reportData));
+      } catch (storageErr) {
+        console.warn('SessionStorage quota exceeded, preserving report in router state only:', storageErr);
       }
-      sessionStorage.setItem(`report_${reportId}`, JSON.stringify(reportData));
 
       // Append to history list in localStorage
       try {

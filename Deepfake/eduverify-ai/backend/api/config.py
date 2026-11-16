@@ -60,9 +60,9 @@ class FusionWeights:
 
 @dataclass
 class DecisionThresholds:
-    """Decision boundary thresholds for final verdict categorization."""
+    """Decision boundary thresholds for final verdict categorization (calibrated via benchmark evaluation)."""
     likely_genuine: float = field(default_factory=lambda: _get_env_float("EDUX_THRESHOLD_T1", 0.45))
-    concern: float = field(default_factory=lambda: _get_env_float("EDUX_THRESHOLD_T2", 0.70))
+    concern: float = field(default_factory=lambda: _get_env_float("EDUX_THRESHOLD_T2", 0.52))
 
     def as_dict(self) -> Dict[str, float]:
         return {

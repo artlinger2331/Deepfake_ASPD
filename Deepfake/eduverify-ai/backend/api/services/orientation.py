@@ -94,25 +94,28 @@ def score_reading_flow(text: str) -> int:
     # Positive signals for beginning of document:
     title_starters = [
         'half', 'title', 'experiment', 'chapter', 'topic', 'definition',
-        'note', 'when', 'if ', 'the ', 'a ', 'an ', 'in ', 'for ', 'to '
+        'note', 'when', 'if ', 'the ', 'a ', 'an ', 'in ', 'for ', 'to ',
+        'computer', 'generation', 'cpu', 'ram', 'rom', 'unit', 'lecture',
+        'assignment', 'question', 'q.', 'q1', 'section', 'intro', 'hardware',
+        'software', 'algorithm', 'system', 'date', 'page', 'pg'
     ]
     if any(lines[0].lower().startswith(k) for k in title_starters):
         score += 10
-    if len(lines[0].split()) <= 4 and lines[0][0].isupper():
+    if re.search(r'\b(date|page|pg)\s*[:\.]', first_line):
+        score += 10
+    if len(lines[0].split()) <= 6 and (lines[0][0].isupper() or lines[0][0].isdigit()):
         score += 5
         
     # Negative signals (bottom-first indicators at top of page):
     bottom_first_starters = [
         'it produces', 'it accepts', 'it has', 'and ', 'or ', 'that adds',
-        'which is', 'then ', 'page:', 'date:', 'pg.', 'fig.'
+        'which is', 'then ', 'therefore ', 'hence '
     ]
     if any(first_line.startswith(k) for k in bottom_first_starters):
         score -= 10
-    if re.search(r'\bpage\s*[:\.]?\s*\d+', first_line) or re.search(r'\bdate\s*[:\.]', first_line):
-        score -= 15
         
-    # Inverted document signals (heading/definition found at the very bottom line):
-    if any(k in last_line for k in ['definition', 'half adder', 'title', 'experiment', 'chapter']):
+    # Inverted document signals (heading found at the very bottom line):
+    if len(last_line.split()) <= 6 and any(last_line.startswith(k) for k in ['title', 'experiment', 'chapter', 'topic', 'half adder', 'definition of', 'definition:']):
         score -= 15
         
     return score
@@ -153,9 +156,9 @@ def compute_fine_skew(pil_img: Image.Image) -> float:
 
 
 def apply_fine_deskew(pil_img: Image.Image) -> Tuple[Image.Image, float]:
-    """Applies fine deskew if the skew angle is noticeable (>= 1.5 degrees)."""
+    """Applies fine deskew if the skew angle is noticeable (>= 3.0 degrees)."""
     angle = compute_fine_skew(pil_img)
-    if abs(angle) >= 1.5:
+    if abs(angle) >= 3.0:
         deskewed = pil_img.rotate(-angle, expand=True, resample=Image.Resampling.BILINEAR, fillcolor=(255, 255, 255))
         return deskewed, angle
     return pil_img, 0.0
@@ -169,3 +172,40 @@ def image_to_base64_data_uri(pil_img: Image.Image) -> str:
     rgb_img.save(buffered, format="JPEG", quality=85, optimize=True)
     b64_str = base64.b64encode(buffered.getvalue()).decode("utf-8")
     return f"data:image/jpeg;base64,{b64_str}"
+
+
+def raw_bytes_to_base64_data_uri(image_bytes: bytes, filename: Optional[str] = None) -> str:
+    """
+    Directly encodes the exact raw uploaded image bytes into a base64 Data URI,
+    strictly preserving verbatim bytes without PIL decoding, EXIF transpositions,
+    rotations, or lossy re-encoding.
+    """
+    import base64
+
+    # Sniff MIME type from magic bytes
+    if image_bytes.startswith(b"\x89PNG\r\n\x1a\n"):
+        mime = "image/png"
+    elif image_bytes.startswith(b"\xff\xd8\xff"):
+        mime = "image/jpeg"
+    elif image_bytes.startswith(b"RIFF") and len(image_bytes) >= 12 and image_bytes[8:12] == b"WEBP":
+        mime = "image/webp"
+    elif image_bytes.startswith(b"GIF87a") or image_bytes.startswith(b"GIF89a"):
+        mime = "image/gif"
+    elif image_bytes.startswith(b"BM"):
+        mime = "image/bmp"
+    elif filename:
+        ext = filename.lower().split(".")[-1]
+        mime_map = {
+            "png": "image/png",
+            "jpg": "image/jpeg",
+            "jpeg": "image/jpeg",
+            "webp": "image/webp",
+            "gif": "image/gif",
+            "bmp": "image/bmp",
+        }
+        mime = mime_map.get(ext, "image/jpeg")
+    else:
+        mime = "image/jpeg"
+
+    b64_str = base64.b64encode(image_bytes).decode("utf-8")
+    return f"data:{mime};base64,{b64_str}"
